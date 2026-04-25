@@ -15,6 +15,7 @@ import { LeaveBalancesModule } from './modules/leave-balances/leave-balances.mod
 import { HcmModule } from './modules/hcm/hcm.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { TimeOffRequestsModule } from './modules/time-off-requests/time-off-requests.module';
+import { SyncModule } from './modules/sync/sync.module';
 
 @Module({
   imports: [
@@ -49,7 +50,8 @@ import { TimeOffRequestsModule } from './modules/time-off-requests/time-off-requ
     LeaveBalancesModule,
     HcmModule,
     AuditModule,
-    TimeOffRequestsModule
+    TimeOffRequestsModule,
+    SyncModule,
   ],
 })
 export class AppModule { }

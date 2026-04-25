@@ -9,6 +9,8 @@ import { TimeOffRequest } from './database/entities/time-off-request.entity';
 import { HcmSyncLog } from './database/entities/hcm-sync-log.entity';
 import { AuditLog } from './database/entities/audit-log.entity';
 import { AuthModule } from './modules/auth/auth.module';
+import { EmployeesModule } from './modules/employees/employees.module';
+import { LocationsModule } from './modules/locations/locations.module';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { AuthModule } from './modules/auth/auth.module';
     }),
 
     AuthModule,
+    EmployeesModule,
+    LocationsModule,
   ],
 })
 export class AppModule { }

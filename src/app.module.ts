@@ -8,6 +8,7 @@ import { LeaveBalance } from './database/entities/leave-balance.entity';
 import { TimeOffRequest } from './database/entities/time-off-request.entity';
 import { HcmSyncLog } from './database/entities/hcm-sync-log.entity';
 import { AuditLog } from './database/entities/audit-log.entity';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -35,6 +36,8 @@ import { AuditLog } from './database/entities/audit-log.entity';
         logging: config.get<string>('nodeEnv') === 'development',
       }),
     }),
+
+    AuthModule,
   ],
 })
 export class AppModule { }

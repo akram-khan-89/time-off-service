@@ -11,6 +11,7 @@ import { AuditLog } from './database/entities/audit-log.entity';
 import { AuthModule } from './modules/auth/auth.module';
 import { EmployeesModule } from './modules/employees/employees.module';
 import { LocationsModule } from './modules/locations/locations.module';
+import { LeaveBalancesModule } from './modules/leave-balances/leave-balances.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { LocationsModule } from './modules/locations/locations.module';
     AuthModule,
     EmployeesModule,
     LocationsModule,
+    LeaveBalancesModule,
   ],
 })
 export class AppModule { }

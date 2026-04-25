@@ -12,6 +12,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { EmployeesModule } from './modules/employees/employees.module';
 import { LocationsModule } from './modules/locations/locations.module';
 import { LeaveBalancesModule } from './modules/leave-balances/leave-balances.module';
+import { HcmModule } from './modules/hcm/hcm.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { LeaveBalancesModule } from './modules/leave-balances/leave-balances.mod
     EmployeesModule,
     LocationsModule,
     LeaveBalancesModule,
+    HcmModule,
   ],
 })
 export class AppModule { }

@@ -1,11 +1,19 @@
-import type { Config } from 'jest';
-
-const config: Config = {
+/** @type {import('jest').Config} */
+const config = {
     moduleFileExtensions: ['js', 'json', 'ts'],
     rootDir: '.',
     testEnvironment: 'node',
     transform: {
-        '^.+\\.(t|j)s$': 'ts-jest',
+        '^.+\\.(t|j)s$': ['ts-jest', {
+            tsconfig: {
+                module: 'commonjs',
+                moduleResolution: 'node',
+                resolvePackageJsonExports: false,
+                experimentalDecorators: true,
+                emitDecoratorMetadata: true,
+                strictNullChecks: false,
+            },
+        }],
     },
     collectCoverageFrom: [
         'src/modules/**/*.service.ts',
@@ -29,13 +37,13 @@ const config: Config = {
     globalSetup: './test/jest.global-setup.ts',
     globalTeardown: './test/jest.global-teardown.ts',
     testMatch: [
-        './test/unit/**/*.spec.ts',
-        './test/integration/**/*.spec.ts',
-        './test/e2e/**/*.spec.ts',
+        '<rootDir>/test/unit/**/*.spec.ts',
+        '<rootDir>/test/integration/**/*.spec.ts',
+        '<rootDir>/test/e2e/**/*.spec.ts',
     ],
     moduleNameMapper: {
         '^src/(.*)$': '<rootDir>/src/$1',
     },
 };
 
-export default config;
+module.exports = config;

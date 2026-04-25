@@ -6,8 +6,10 @@ import {
     IsDateString,
     Min,
     IsNotEmpty,
+    IsOptional,
 } from 'class-validator';
 import { Type, plainToInstance } from 'class-transformer';
+
 
 export class HcmBalanceItemDto {
     @IsString()
@@ -49,9 +51,11 @@ export class HcmSubmissionResponseDto {
     @IsString()
     status!: 'accepted' | 'rejected';
 
+    @IsOptional()
     @IsString()
     reason?: string;
 
+    @IsOptional()
     @IsNumber()
     @Min(0)
     remainingBalance?: number;

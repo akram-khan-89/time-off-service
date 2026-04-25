@@ -40,13 +40,11 @@ export class SyncService {
         private readonly hcmClient: HcmClient,
     ) { }
 
-    // ─── Batch Ingest (called by HCM push) ───────────────────────────────────
 
     async enqueueBatchIngest(
         dto: BatchIngestDto,
         triggeredBy: string | null,
     ): Promise<{ syncLogId: string; status: string; recordsQueued: number }> {
-        // Guard: prevent overlapping batch jobs
         const activeJobs = await this.batchSyncQueue.getActiveCount();
         const waitingJobs = await this.batchSyncQueue.getWaitingCount();
 
@@ -57,7 +55,6 @@ export class SyncService {
             });
         }
 
-        // Create sync log row immediately — gives HCM a traceable reference
         const syncLog = await this.syncLogRepo.save(
             this.syncLogRepo.create({
                 syncType: SyncType.BATCH,
@@ -67,7 +64,6 @@ export class SyncService {
             }),
         );
 
-        // Write audit entry for sync start
         await this.auditService.write({
             actorId: triggeredBy,
             actorRole: triggeredBy ? 'admin' : null,
@@ -77,7 +73,6 @@ export class SyncService {
             afterState: AuditService.snapshot(syncLog),
         });
 
-        // Enqueue the job — returns immediately (202)
         await this.batchSyncQueue.add(
             JOB_NAMES.PROCESS_BATCH,
             {
@@ -104,7 +99,6 @@ export class SyncService {
         };
     }
 
-    // ─── Batch Processing (called by Bull processor) ──────────────────────────
 
     async processBatch(data: BatchSyncJobData): Promise<void> {
         const { syncLogId, records, triggeredBy } = data;
@@ -134,7 +128,6 @@ export class SyncService {
             }
         }
 
-        // Determine final sync status
         let finalStatus: SyncStatus;
         if (failed === 0) {
             finalStatus = SyncStatus.COMPLETED;
@@ -144,7 +137,6 @@ export class SyncService {
             finalStatus = SyncStatus.PARTIAL;
         }
 
-        // Update sync log with results
         await this.syncLogRepo.update(syncLogId, {
             status: finalStatus,
             recordsApplied: applied,
@@ -153,7 +145,6 @@ export class SyncService {
             completedAt: new Date(),
         });
 
-        // Audit sync completion
         await this.auditService.write({
             actorId: triggeredBy,
             actorRole: triggeredBy ? 'admin' : null,
@@ -177,14 +168,12 @@ export class SyncService {
         );
     }
 
-    // ─── Single Record Reconciliation ─────────────────────────────────────────
 
     private async processOneRecord(
         record: BatchBalanceRecordDto,
         syncLogId: string,
         triggeredBy: string | null,
     ): Promise<void> {
-        // 1. Resolve HCM IDs → internal IDs
         const employee = await this.employeesService.findByHcmId(
             record.hcmEmployeeId,
         );
@@ -205,20 +194,18 @@ export class SyncService {
             );
         }
 
-        // 2. Read current local balance
         const existing = await this.leaveBalancesService.findRaw(
             employee.id,
             location.id,
             record.leaveType,
         );
 
-        // 3. Staleness check — if our local data is NEWER than this batch record,
-        //    skip it. HCM batch can arrive out of order.
+
         if (existing) {
             const recordAsOf = new Date(record.asOf);
             const localSyncedAt = new Date(existing.hcmSyncedAt);
 
-            if (recordAsOf <= localSyncedAt) {
+            if (recordAsOf.getTime() <= localSyncedAt.getTime()) {
                 this.logger.debug(
                     `Skipping stale batch record for employee ${employee.id} — ` +
                     `record.asOf: ${record.asOf}, local.hcmSyncedAt: ${existing.hcmSyncedAt}`,
@@ -232,7 +219,6 @@ export class SyncService {
             existing !== null &&
             Number(existing.balanceDays) !== record.balanceDays;
 
-        // 4. Upsert the balance — HCM wins
         const updated = await this.leaveBalancesService.upsertBalance({
             employeeId: employee.id,
             locationId: location.id,
@@ -241,7 +227,6 @@ export class SyncService {
             hcmSyncedAt: new Date(record.asOf),
         });
 
-        // 5. Write audit only if balance actually changed
         if (isReconciliation || !existing) {
             await this.auditService.write({
                 actorId: triggeredBy,
@@ -263,7 +248,6 @@ export class SyncService {
         }
     }
 
-    // ─── Admin Trigger (manual real-time refresh for all employees) ───────────
 
     async triggerManualSync(
         currentUser: CurrentUserData,
@@ -288,10 +272,6 @@ export class SyncService {
         this.logger.log(
             `Manual sync triggered by admin ${currentUser.id} — syncLogId: ${syncLog.id}`,
         );
-
-        // Note: actual per-employee refresh would be done asynchronously
-        // For now we mark it started and return immediately
-        // A full implementation would queue per-employee refresh jobs
         await this.syncLogRepo.update(syncLog.id, {
             status: SyncStatus.COMPLETED,
             completedAt: new Date(),
@@ -303,7 +283,6 @@ export class SyncService {
         };
     }
 
-    // ─── Sync Log Queries ─────────────────────────────────────────────────────
 
     async findAllLogs(
         page: number = 1,

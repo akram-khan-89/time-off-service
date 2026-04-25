@@ -181,7 +181,7 @@ export class HcmClient {
 
     private async validateSubmissionResponse(raw: unknown): Promise<HcmSubmissionResponseDto> {
         const dto = plainToInstance(HcmSubmissionResponseDto, raw);
-        const errors = await validate(dto, { skipMissingProperties: true });
+        const errors = await validate(dto);
 
         if (errors.length > 0) {
             this.logger.error(

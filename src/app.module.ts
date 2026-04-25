@@ -14,6 +14,7 @@ import { LocationsModule } from './modules/locations/locations.module';
 import { LeaveBalancesModule } from './modules/leave-balances/leave-balances.module';
 import { HcmModule } from './modules/hcm/hcm.module';
 import { AuditModule } from './modules/audit/audit.module';
+import { TimeOffRequestsModule } from './modules/time-off-requests/time-off-requests.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { AuditModule } from './modules/audit/audit.module';
     LeaveBalancesModule,
     HcmModule,
     AuditModule,
+    TimeOffRequestsModule
   ],
 })
 export class AppModule { }

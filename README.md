@@ -113,8 +113,8 @@ This creates the following accounts (all use password: `password123`):
 |---|---|
 | admin@company.com | admin |
 | manager@company.com | manager |
-| alice@company.com | employee |
-| bob@company.com | employee |
+| David@company.com | employee |
+| Jessica@company.com | employee |
 
 ### Start the API
 

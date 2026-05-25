@@ -1,5 +1,17 @@
 # Time-Off Microservice
 
+![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-FF4438?style=for-the-badge&logo=redis&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
+![Jest](https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js_v18+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+
+![Tests](https://img.shields.io/badge/tests-84%20passing-brightgreen?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
+
 A NestJS microservice that manages the full lifecycle of employee time-off requests and keeps leave balances in sync with an external HCM system (Workday, SAP, or equivalent).
 
 ---
@@ -18,21 +30,21 @@ A NestJS microservice that manages the full lifecycle of employee time-off reque
 
 | Concern | Technology |
 |---|---|
-| Framework | NestJS (TypeScript) |
-| Database | SQLite via TypeORM |
-| Auth | JWT — role-based (employee / manager / admin) |
-| Background Jobs | Bull (Redis-backed queue) |
-| HCM Communication | Axios with exponential backoff retry |
-| Testing | Jest — 84 unit tests, all passing |
-| Mock HCM | Express server with in-memory state |
+| Framework | ![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=flat-square&logo=nestjs&logoColor=white) NestJS (TypeScript) |
+| Database | ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white) SQLite via TypeORM |
+| Auth | ![JWT](https://img.shields.io/badge/JWT-000000?style=flat-square&logo=jsonwebtokens&logoColor=white) JWT — role-based (employee / manager / admin) |
+| Background Jobs | ![Bull](https://img.shields.io/badge/Bull_Queue-FF4438?style=flat-square&logo=redis&logoColor=white) Bull (Redis-backed queue) |
+| HCM Communication | ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=flat-square&logo=axios&logoColor=white) Axios with exponential backoff retry |
+| Testing | ![Jest](https://img.shields.io/badge/Jest-C21325?style=flat-square&logo=jest&logoColor=white) Jest — 84 unit tests, all passing |
+| Mock HCM | ![Express](https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white) Express server with in-memory state |
 
 ---
 
 ## Prerequisites
 
-- **Node.js** v18 or higher
-- **npm** v9 or higher
-- **Redis** — required for Bull queue (background batch sync)
+- ![Node.js](https://img.shields.io/badge/Node.js-v18+-339933?style=flat-square&logo=nodedotjs&logoColor=white) **Node.js** v18 or higher
+- ![npm](https://img.shields.io/badge/npm-v9+-CB3837?style=flat-square&logo=npm&logoColor=white) **npm** v9 or higher
+- ![Redis](https://img.shields.io/badge/Redis-FF4438?style=flat-square&logo=redis&logoColor=white) **Redis** — required for Bull queue (background batch sync)
   - Install locally: https://redis.io/docs/getting-started/
   - Or run with Docker: `docker run -d -p 6379:6379 redis:alpine`
   - For tests, Redis is mocked via `ioredis-mock` — no Redis needed to run tests
@@ -172,20 +184,20 @@ curl -X POST http://localhost:3000/auth/login \
 
 | Method | Path | Role | Description |
 |---|---|---|---|
-| POST | /auth/login | Public | Get JWT |
-| GET | /employees/me | Any | Own profile |
-| GET | /employees/me/balances | Any | Own leave balances |
-| POST | /time-off-requests | Employee | Submit a request |
-| GET | /time-off-requests/mine | Employee | Own requests |
-| GET | /time-off-requests/team | Manager | Direct reports' requests |
-| POST | /time-off-requests/:id/approve | Manager, Admin | Approve a request |
-| POST | /time-off-requests/:id/reject | Manager, Admin | Reject with reason |
-| POST | /time-off-requests/:id/withdraw | Employee | Withdraw own pending request |
-| POST | /time-off-requests/:id/cancel | Admin | Cancel approved request |
-| POST | /sync/batch-ingest | Service token | HCM pushes balance corpus |
-| POST | /sync/trigger | Admin | Manual sync trigger |
-| GET | /sync/logs | Admin | Sync history |
-| GET | /audit | Admin | Full audit trail |
+| `POST` | /auth/login | Public | Get JWT |
+| `GET` | /employees/me | Any | Own profile |
+| `GET` | /employees/me/balances | Any | Own leave balances |
+| `POST` | /time-off-requests | Employee | Submit a request |
+| `GET` | /time-off-requests/mine | Employee | Own requests |
+| `GET` | /time-off-requests/team | Manager | Direct reports' requests |
+| `POST` | /time-off-requests/:id/approve | Manager, Admin | Approve a request |
+| `POST` | /time-off-requests/:id/reject | Manager, Admin | Reject with reason |
+| `POST` | /time-off-requests/:id/withdraw | Employee | Withdraw own pending request |
+| `POST` | /time-off-requests/:id/cancel | Admin | Cancel approved request |
+| `POST` | /sync/batch-ingest | Service token | HCM pushes balance corpus |
+| `POST` | /sync/trigger | Admin | Manual sync trigger |
+| `GET` | /sync/logs | Admin | Sync history |
+| `GET` | /audit | Admin | Full audit trail |
 
 Full API specification is in the TRD (`TRD.docx`).
 
@@ -279,13 +291,13 @@ Full analysis of alternatives in `TRD.docx`.
 
 | Variable | Default | Required | Description |
 |---|---|---|---|
-| JWT_SECRET | — | Yes | HS256 signing key |
-| JWT_EXPIRES_IN | 24h | No | Token lifetime |
-| HCM_BASE_URL | — | Yes | HCM real-time API base URL |
-| HCM_SERVICE_TOKEN | — | Yes | Static token for batch ingest |
-| HCM_TIMEOUT_MS | 5000 | No | Per-attempt HCM call timeout (ms) |
-| HCM_STALE_THRESHOLD_HOURS | 4 | No | Hours before a local balance is considered stale |
-| DATABASE_PATH | ./data/time-off.sqlite | No | SQLite file path |
-| REDIS_HOST | localhost | No | Bull queue Redis host |
-| REDIS_PORT | 6379 | No | Bull queue Redis port |
-| PORT | 3000 | No | HTTP listen port |
+| `JWT_SECRET` | — | ✅ Yes | HS256 signing key |
+| `JWT_EXPIRES_IN` | 24h | No | Token lifetime |
+| `HCM_BASE_URL` | — | ✅ Yes | HCM real-time API base URL |
+| `HCM_SERVICE_TOKEN` | — | ✅ Yes | Static token for batch ingest |
+| `HCM_TIMEOUT_MS` | 5000 | No | Per-attempt HCM call timeout (ms) |
+| `HCM_STALE_THRESHOLD_HOURS` | 4 | No | Hours before a local balance is considered stale |
+| `DATABASE_PATH` | ./data/time-off.sqlite | No | SQLite file path |
+| `REDIS_HOST` | localhost | No | Bull queue Redis host |
+| `REDIS_PORT` | 6379 | No | Bull queue Redis port |
+| `PORT` | 3000 | No | HTTP listen port |
